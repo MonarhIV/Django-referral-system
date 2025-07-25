@@ -58,7 +58,6 @@
                 if (data.error) {
                     showMsg(data.error, true);
                 } else {
-                    // Попытка извлечь тестовый код из сообщения (если есть)
                     let codeMatch = data.message.match(/\d{4}/);
                     if (codeMatch) {
                         showToast('Ваш тестовый код: ' + codeMatch[0]);
@@ -83,6 +82,9 @@
                     showMsg(data.error, true);
                 } else {
                     showMsg(data.message + ' (user_id: ' + data.user_id + ')', false);
+                    setTimeout(() => {
+                        window.location.href = '/profile_page/';
+                    }, 1000);
                 }
             });
         }

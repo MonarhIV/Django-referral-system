@@ -13,6 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from auth.jwt_django import decode_jwt
+from django.shortcuts import redirect
 
 User = get_user_model()
 
@@ -47,6 +48,10 @@ class CodeAuthView(APIView):
         return resp
 
 class ProfileView(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
     def get_user_from_jwt(self, request):
         token = request.COOKIES.get('jwt')
         if not token:
@@ -62,8 +67,8 @@ class ProfileView(View):
         user = self.get_user_from_jwt(request)
         if not user:
             return JsonResponse({'error': 'Unauthorized'}, status=401)
-        invited_users = User.objects.filter(activated_invite_code=user.invite_code)
-        invited_phones = [u.phone for u in invited_users]
+        # Список пользователей, которых пригласил текущий пользователь
+        invited_phones = [u.phone for u in user.invited_users.all()]
         return JsonResponse({
             'phone': user.phone,
             'invite_code': user.invite_code,
@@ -88,5 +93,10 @@ class ProfileView(View):
         if not inviter:
             return JsonResponse({'error': 'Инвайт-код не найден'}, status=404)
         user.activated_invite_code = code
+        user.invited_by = inviter
         user.save()
         return JsonResponse({'message': 'Инвайт-код успешно активирован', 'activated_invite_code': code})
+
+class ProfilePageView(View):
+    def get(self, request):
+        return render(request, 'referral/profile.html')

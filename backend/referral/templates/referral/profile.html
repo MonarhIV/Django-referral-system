@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль пользователя</title>
+    <style>
+        body { font-family: sans-serif; }
+        .msg { margin: 10px 0; }
+        #toast {
+            visibility: hidden;
+            min-width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 40px;
+            transform: translateX(-50%);
+            font-size: 18px;
+            opacity: 0;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        .field { margin-bottom: 10px; }
+        .invited-list { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Профиль пользователя</h1>
+    <div id="profile"></div>
+    <div id="invite-form" style="display:none;">
+        <h3>Активировать чужой инвайт-код</h3>
+        <input type="text" id="invite_code" placeholder="Инвайт-код">
+        <button onclick="activateInvite()">Активировать</button>
+    </div>
+    <div class="msg" id="msg"></div>
+    <div id="toast"></div>
+    <script>
+        function fetchProfile() {
+            fetch('/profile/', { credentials: 'include' })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.error) {
+                        showMsg(data.error, true);
+                        document.getElementById('profile').innerHTML = '';
+                        document.getElementById('invite-form').style.display = 'none';
+                        return;
+                    }
+                    let html = '';
+                    html += `<div class='field'><b>Телефон:</b> ${data.phone}</div>`;
+                    html += `<div class='field'><b>Ваш инвайт-код:</b> ${data.invite_code}</div>`;
+                    html += `<div class='field'><b>Активированный чужой инвайт-код:</b> ${data.activated_invite_code ? data.activated_invite_code : '—'}</div>`;
+                    if (!data.activated_invite_code) {
+                        document.getElementById('invite-form').style.display = '';
+                    } else {
+                        document.getElementById('invite-form').style.display = 'none';
+                        document.getElementById('invite_code').value = '';
+                    }
+                    html += `<div class='invited-list'><b>Пользователи, которых вы пригласили:</b><ul>`;
+                    if (data.invited_users.length === 0) {
+                        html += '<li>—</li>';
+                    } else {
+                        for (let phone of data.invited_users) {
+                            html += `<li>${phone}</li>`;
+                        }
+                    }
+                    html += '</ul></div>';
+                    document.getElementById('profile').innerHTML = html;
+                });
+        }
+
+        function activateInvite() {
+            const code = document.getElementById('invite_code').value;
+            fetch('/profile/', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({invite_code: code})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) {
+                    showToast(data.error);
+                } else {
+                    showToast(data.message);
+                    fetchProfile();
+                }
+            });
+        }
+
+        function showMsg(msg, isError) {
+            const el = document.getElementById('msg');
+            el.style.color = isError ? 'red' : 'green';
+            el.textContent = msg;
+        }
+
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            toast.textContent = text;
+            toast.className = 'show';
+            setTimeout(() => {
+                toast.className = toast.className.replace('show', '');
+            }, 3000);
+        }
+
+        fetchProfile();
+    </script>
+</body>
+</html> 

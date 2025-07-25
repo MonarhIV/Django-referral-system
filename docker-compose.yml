@@ -24,12 +24,16 @@ services:
     image: postgres:15
     volumes:
       - ./pg_db:/var/lib/postgresql/data/
+      - ./pg_db:/var/lib/postgresql/data/
+      - ./init_referral_user.sql:/docker-entrypoint-initdb.d/init_referral_user.sql
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
     networks:
       - dev
+    ports:
+      - "5432:5432"
 
 
   pgadmin:
