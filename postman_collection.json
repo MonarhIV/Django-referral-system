@@ -1,0 +1,82 @@
+{
+  "info": {
+    "name": "Django Referral System API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Отправка номера телефона (получить код)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"phone\": \"+79991234567\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/auth/phone/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "auth", "phone", ""]
+        }
+      }
+    },
+    {
+      "name": "Авторизация по коду",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"phone\": \"+79991234567\",\n  \"code\": \"1234\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/auth/code/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "auth", "code", ""]
+        }
+      }
+    },
+    {
+      "name": "Получить профиль пользователя",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/profile/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["profile", ""]
+        }
+      }
+    },
+    {
+      "name": "Активировать чужой инвайт-код",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"invite_code\": \"XYZ789\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/profile/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["profile", ""]
+        }
+      }
+    }
+  ]
+} 

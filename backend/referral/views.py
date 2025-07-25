@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from auth.jwt_django import decode_jwt
-from django.shortcuts import redirect
+
 
 User = get_user_model()
 
@@ -75,6 +75,7 @@ class ProfileView(View):
             'activated_invite_code': user.activated_invite_code,
             'invited_users': invited_phones
         })
+
 
     def post(self, request):
         user = self.get_user_from_jwt(request)
