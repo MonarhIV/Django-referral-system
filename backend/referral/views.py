@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 import random
 import time
+from auth.jwt_django import encode_jwt
 
 User = get_user_model()
 
@@ -29,4 +30,8 @@ class CodeAuthView(APIView):
         if code != real_code:
             return Response({'error': 'Неверный или просроченный код'}, status=status.HTTP_400_BAD_REQUEST)
         user, created = User.objects.get_or_create(phone=phone, defaults={"username": phone})
-        return Response({'message': 'Успешная авторизация', 'is_new': created, 'user_id': user.id}, status=status.HTTP_200_OK)
+        # Генерируем JWT-токен
+        token = encode_jwt({"user_id": user.id, "phone": user.phone})
+        resp = Response({'message': 'Успешная авторизация', 'is_new': created, 'user_id': user.id}, status=status.HTTP_200_OK)
+        resp.set_cookie('jwt', token, httponly=True, samesite='Lax')
+        return resp
