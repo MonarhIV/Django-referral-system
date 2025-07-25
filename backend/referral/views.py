@@ -7,8 +7,14 @@ from django.core.cache import cache
 import random
 import time
 from auth.jwt_django import encode_jwt
+from django.views import View
+from django.http import HttpResponseRedirect
 
 User = get_user_model()
+
+class HomeView(View):
+    def get(self, request):
+        return render(request, 'referral/home.html')
 
 class PhoneAuthView(APIView):
     def post(self, request):
@@ -18,7 +24,7 @@ class PhoneAuthView(APIView):
         code = f'{random.randint(1000, 9999)}'
         cache.set(f'auth_code_{phone}', code, timeout=300) # 5 минут
         time.sleep(1.5)
-        return Response({'message': 'Код отправлен (имитация)', 'phone': phone}, status=status.HTTP_200_OK)
+        return Response({'message': f'Код отправлен (имитация): {code}', 'phone': phone}, status=status.HTTP_200_OK)
 
 class CodeAuthView(APIView):
     def post(self, request):
