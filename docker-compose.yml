@@ -1,0 +1,51 @@
+version: '3.8'
+
+networks:
+  dev:
+
+services:
+  backend:
+    image: backend:latest
+    build: ./backend
+    container_name: backend
+    volumes:
+      - ./backend:/backend
+    expose:
+      - 8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - dev
+
+
+  db:
+    image: postgres:15
+    volumes:
+      - ./pg_db:/var/lib/postgresql/data/
+      - ./pg_db:/var/lib/postgresql/data/
+      - ./init_referral_user.sql:/docker-entrypoint-initdb.d/init_referral_user.sql
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    networks:
+      - dev
+    ports:
+      - "5432:5432"
+
+
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - db
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=root@postgres.ru
+      - PGADMIN_DEFAULT_PASSWORD=postgres 
+      - PGADMIN_LISTEN_ADDRESS=0.0.0.0 
+      - PGADMIN_LISTEN_PORT=5555
+    ports:
+      - "5555:5555"
+    networks:
+      - dev
