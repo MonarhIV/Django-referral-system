@@ -15,6 +15,11 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+JWT_PRIVATE_KEY_PATH = BASE_DIR / "auth" / "certs" / "private.pem"
+JWT_PUBLIC_KEY_PATH = BASE_DIR / "auth" / "certs" / "public.pem"
+JWT_ALGORITHM = "RS256"
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES = 3
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
