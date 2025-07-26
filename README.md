@@ -81,3 +81,30 @@
 - Все защищённые эндпоинты требуют JWT в cookie (`jwt`).
 - Список приглашённых строится по полю `invited_by`.
 - Для автоматического создания таблицы referral_user используется SQL-скрипт `init_referral_user.sql` (см. docker-compose).
+
+---
+
+## Запуск проекта
+
+### Запуск через Docker Compose 
+
+1. Убедитесь, что установлены Docker и Docker Compose.
+2. В корне проекта выполните команду:
+   ```sh
+   docker-compose up --build
+   ```
+3. После запуска сервисов база данных и backend будут подняты автоматически.
+4. Если backend запуститься с ошибкой:
+```
+backend    | django.db.utils.OperationalError: connection to server at "db" (172.20.0.2), port 5432 failed: Connection refused                                            
+backend    |    Is the server running on that host and accepting TCP/IP connections?
+backend    |                                
+```
+то дождитесь запуска сервиса bd и перезапустите контейнер backend следующей командой:
+```
+docker-compose restart backend
+
+```
+---
+
+Теперь вы можете открыть http://localhost:8000/ для доступа к приложению.
